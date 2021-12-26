@@ -28,7 +28,7 @@ final class AuthController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        $user = User::where('email', $request['email'])->firstOrFail();
+        $user = User::where('email', $request['email'])->firstOrFail(['id','name','profile']);
 
         $payload = [
             'id' => $user->id,
@@ -36,7 +36,10 @@ final class AuthController extends Controller
             'profile' => $user->profile
         ];
 
-        return response()->json(['token' => PocJwt::createToken($payload)]);
+        $user->token = PocJwt::createToken($payload);
+        $user->save();
+
+        return response()->json(['token' => $user->token]);
     }
 
     public static function logout(Request $request){

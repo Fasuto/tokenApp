@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
 use App\Helpers\PocJwt;
 use Closure;
 use Illuminate\Http\Request;
@@ -27,7 +28,12 @@ class VerifyJwt
             return response()->json(['error'=>'authorization token is invalid'], 403);
         }
 
-        $request->request->add(['user' => PocJwt::decodeToken($token)]);
+        $user = User::where('token',$token)->first();
+        if(empty($user)){
+            return response()->json(['error'=>'authorization failed'], 403);
+        }
+
+        $request->request->add(['user' => $user]);
         return $next($request);
     }
 }

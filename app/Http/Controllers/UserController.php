@@ -18,10 +18,10 @@ final class UserController extends Controller
         if($request->user->profile !== 'admin'){
             return response()->json(['error'=>'unauthorized'], 403);
         }
-        $userRequest = User::findOrFail($request->user->id);
+
         $users = User::all();
         return response()->json([
-            'userRequest' => $userRequest,
+            'userRequest' => $request->user(),
             'userList'=>$users
         ]);
     }
